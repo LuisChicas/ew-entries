@@ -1,4 +1,6 @@
 ﻿using EasyWallet.Entries.Business.Abstractions;
+using EasyWallet.Entries.Business.Helpers;
+using EasyWallet.Entries.Business.Models;
 using EasyWallet.Entries.Data.Abstractions;
 using EasyWallet.Entries.Data.Entities;
 using System;
@@ -15,7 +17,30 @@ namespace EasyWallet.Entries.Business.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<int> AddEntry(int keywordId, decimal amount, DateTime date)
+        public async Task<int> AddEntry(Entry entry)
+        {
+            DateTime now = DateTime.UtcNow;
+
+            var entryDate = new DateTime(
+                entry.Date.Year,
+                entry.Date.Month,
+                entry.Date.Day,
+                now.Hour,
+                now.Minute,
+                now.Second);
+
+            entry.Date = entryDate;
+            entry.CreatedAt = DateTime.UtcNow;
+
+            EntryData entryData = BusinessMapper.Map<EntryData>(entry);
+
+            await _unitOfWork.Entries.AddAsync(entryData);
+            await _unitOfWork.CommitAsync();
+
+            return entryData.Id;
+        }
+
+        public async Task<int> AddEntry(int userId, int keywordId, decimal amount, DateTime date)
         {
             DateTime now = DateTime.UtcNow;
 
@@ -29,16 +54,17 @@ namespace EasyWallet.Entries.Business.Services
 
             var entry = new EntryData
             {
-                Amount = amount,
+                UserId = userId,
                 KeywordId = keywordId,
+                Amount = amount,
                 Date = entryDate,
                 CreatedAt = DateTime.UtcNow
             };
 
-            int entryId = await _unitOfWork.Entries.AddAsync(entry);
+            await _unitOfWork.Entries.AddAsync(entry);
             await _unitOfWork.CommitAsync();
 
-            return entryId;
+            return entry.Id;
         }
 
         public async Task DeleteEntry(int id)

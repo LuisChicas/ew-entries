@@ -5,16 +5,10 @@ using EasyWallet.Entries.Data;
 using EasyWallet.Entries.Data.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyWallet.Entries.Api
@@ -33,14 +27,12 @@ namespace EasyWallet.Entries.Api
         {
             services.AddDbContextPool<EntryContext>(o => {
                 var version = new MySqlServerVersion(new Version(5, 7));
-                o.UseMySql(
-                    Configuration["ConnectionString"], 
-                    version, 
-                    x => x.MigrationsAssembly("EasyWallet.Entries.Data"));
+                o.UseMySql(Configuration["ConnectionString"], version);
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IEntryService, EntryService>();
+            services.AddTransient<IReportService, ReportService>();
 
             services.AddControllers();
         }

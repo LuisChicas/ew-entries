@@ -1,6 +1,8 @@
-﻿using EasyWallet.Entries.Api.Requests;
+﻿using EasyWallet.Entries.Api.Helpers;
+using EasyWallet.Entries.Api.Requests;
 using EasyWallet.Entries.Api.Responses;
 using EasyWallet.Entries.Business.Abstractions;
+using EasyWallet.Entries.Business.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -18,14 +20,14 @@ namespace EasyWallet.Entries.Api.Controllers
             _entryService = entryService;
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<Response<CreateEntryResponse>> Create([FromBody] CreateEntryRequest request)
         {
             int entryId;
 
             try
             {
-                entryId = await _entryService.AddEntry(request.KeywordId, request.Amount, request.Date);
+                entryId = await _entryService.AddEntry(ApiMapper.Map<Entry>(request));
             }
             catch (Exception e)
             {
@@ -46,9 +48,23 @@ namespace EasyWallet.Entries.Api.Controllers
             };
         }
 
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("delete/{id}")]
+        public async Task<Response> Delete(int id)
         {
+            try
+            {
+                await _entryService.DeleteEntry(id);
+            }
+            catch (Exception e)
+            {
+                return new Response
+                {
+                    Success = false,
+                    Message = e.Message
+                };
+            }
+
+            return new Response { Success = true };
         }
     }
 }

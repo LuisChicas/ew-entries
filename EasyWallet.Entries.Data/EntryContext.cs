@@ -16,6 +16,7 @@ namespace EasyWallet.Entries.Data
             modelBuilder.Entity<EntryData>(e =>
             {
                 e.Property(e => e.UserId).IsRequired();
+                e.Property(e => e.CategoryId).IsRequired();
                 e.Property(e => e.KeywordId).IsRequired();
                 e.Property(e => e.Amount)
                     .HasColumnType("decimal(6, 2)")
