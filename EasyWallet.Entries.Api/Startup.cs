@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using Microsoft.EntityFrameworkCore;
+using EasyWallet.Entries.Api.Middlewares;
 
 namespace EasyWallet.Entries.Api
 {
@@ -48,6 +49,8 @@ namespace EasyWallet.Entries.Api
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<ApiKeyMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
