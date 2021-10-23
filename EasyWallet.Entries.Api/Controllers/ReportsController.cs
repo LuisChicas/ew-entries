@@ -19,22 +19,22 @@ namespace EasyWallet.Entries.Api.Controllers
             _reportService = reportService;
         }
 
-        [HttpGet("history")]
-        public async Task<Response<HistoryReport>> GetHistoryReport([FromBody] GetReportRequest request)
+        [HttpGet("history/{userId}")]
+        public async Task<Response<HistoryReport>> GetHistoryReport(int userId)
         {
-            return await GetReportResponse(() => _reportService.GetHistoryReport(request.UserId));
+            return await GetReportResponse(() => _reportService.GetHistoryReport(userId));
         }
 
-        [HttpGet("monthly")]
-        public async Task<Response<MonthlyReport>> GetMonthlyReport([FromBody] GetReportRequest request)
+        [HttpGet("monthly/{userId}")]
+        public async Task<Response<MonthlyReport>> GetMonthlyReport(int userId)
         {
-            return await GetReportResponse(() => _reportService.GetMonthlyReport(request.UserId));
+            return await GetReportResponse(() => _reportService.GetMonthlyReport(userId));
         }
-
-        [HttpGet("balance")]
-        public async Task<Response<BalanceReport>> GetBalanceReport([FromBody] GetBalanceReportRequest request)
+        
+        [HttpGet("balance/{userId}/{incomeCategoryId}")]
+        public async Task<Response<BalanceReport>> GetBalanceReport(int userId, int incomeCategoryId)
         {
-            return await GetReportResponse(() => _reportService.GetBalanceReport(request.UserId, request.IncomeCategoryId));
+            return await GetReportResponse(() => _reportService.GetBalanceReport(userId, incomeCategoryId));
         }
 
         private async Task<Response<T>> GetReportResponse<T>(Func<Task<T>> getReport)
